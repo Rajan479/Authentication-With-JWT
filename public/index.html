@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auth website</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        function sendRequest(){
+            axios.post("http://localhost:3001/sum", {
+                a : document.getElementById("a").value,
+                b : document.getElementById("b").value
+            });
+        }
+
+        async function signup(){
+            const username = document.getElementById("signup-un").value;
+            const password = document.getElementById("signup-pw").value;
+
+            await axios.post("http://localhost:3001/signup",{
+                username : username,
+                password : password
+            });
+            alert("You are signed up");
+        }
+
+        async function signin(){
+            const username = document.getElementById("signin-un").value;
+            const password = document.getElementById("signin-pw").value;
+
+            const response = await axios.post("http://localhost:3001/signin",{
+                username : username,
+                password : password
+            });
+
+            localStorage.setItem("token", response.data.token);
+            alert("You are signed in");
+        }
+
+        async function getUserInformation(){
+            const response = await axios.get("http://localhost:3001/me",{
+                headers: {
+                    token : localStorage.getItem("token")
+                }
+            });
+            if(localStorage.getItem("token") != null){
+                document.getElementById("information").innerHTML = "Username : " + response.data.username + 
+                                                                "   Password : " + response.data.password
+            }
+        }
+        getUserInformation();
+
+        function logout(){
+            localStorage.removeItem("token");
+        } 
+    </script>
+</head>
+<body>
+<!-- <input id="a" type="text" placeholder="Enter the first number">
+        <input id="b" type="text" placeholder="Enter the second number">
+        <button onclick="sendRequest()">Find sum</button>
+        -->
+
+    <div>
+        <center>
+            <b>Signup</b>
+            <br> <br>
+            <input id="signup-un" type="text" name="username" placeholder="Username">
+            <br> <br>
+            <input id="signup-pw" type="password" name="password" placeholder="Password">
+            <br> <br>
+            <button onclick="signup()">Signup</button>
+        </center>
+    </div>
+
+    <br> <br>
+
+    <div>
+        <center>
+            <b>Signin</b>
+            <br> <br>
+            <input id="signin-un" type="text" name="username" placeholder="Username">
+            <br> <br>
+            <input id="signin-pw" type="password" name="password" placeholder="Password">
+            <br> <br>
+            <button onclick="signin()">Signin</button>
+        </center>
+    </div>
+
+    <br> <br>
+    <center>
+        <div>
+            <b>User information:</b>
+            <div id="information"></div>
+        </div>
+    </center>
+
+    <br> <br>
+        <center>
+            <div>
+                <button onclick="logout()">Logout</button>
+            </div>
+        </center>
+</body>
+</html>
